@@ -16,6 +16,10 @@
       <div [hidden]="!modelLoaded || !webBtnStatus" style="display: none">
         <video #videoElement width="{{ videoWidth }}" height="{{ videoHeight }}"></video>
       </div>
+
+      <div [hidden]="!modelLoaded || videoCanvasEnable" class="col mb-3">
+        <canvas id="canvas" class="img-border" width="{{ canvasWidth }}" height="{{ canvasHeight }}"></canvas>
+      </div>
     
       <div *ngIf="videoCanvasEnable" >
         <canvas id="videoCanvas" class="img-border" width="{{ canvasWidth }}" height="{{ canvasHeight }}"></canvas>

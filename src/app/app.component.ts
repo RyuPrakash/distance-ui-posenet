@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
   public modelLoaded: boolean = false;
   public title: string = 'Pose Estimation  App';
   public introline: string = '(using TensorFlow.js with PoseNet Model)';
-  public modelText: string = 'Select Model';
+  public modelText: string = 'ResNet 50';
   public imgBtnStatus: boolean = true;
   public webBtnStatus: boolean = false;
   public imageElement: any;
@@ -87,6 +87,7 @@ export class AppComponent implements OnInit {
     }, 1000);
 
     this.videoMode();
+    this.loadModel();
    
   
   }
@@ -259,6 +260,7 @@ export class AppComponent implements OnInit {
   }
 
   public async loadModel() {
+    console.log('hiiii')
     this.canvas = document.getElementById("canvas");
     this.canvasContext = this.canvas.getContext("2d");
     this.canvasContext.clearRect(0, 0, 400, 300);
@@ -266,6 +268,7 @@ export class AppComponent implements OnInit {
     let inputResolution: any = parseInt(this.inputResolution);
     let multiplier: any = parseFloat(this.multiplier);
     let quantBytes: any = parseInt(this.quantBytes);
+    console.log(this.modelText,'>>>>>')
     if (this.modelText === 'MobileNet V1') {
       this.modelLoaded = false;
       this.model = await posenet.load({
