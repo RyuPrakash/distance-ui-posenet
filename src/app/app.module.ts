@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Ng5SliderModule } from 'ng5-slider';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { PosenetService } from './posenet.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,7 @@ import { AppComponent } from './app.component';
     AppRoutingModule,
     NgbModule
   ],
-  providers: [],
+  providers: [PosenetService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

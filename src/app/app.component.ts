@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, OnChanges } from '@angular/core';
 import { Options, ChangeContext } from 'ng5-slider';
 import * as posenet from '@tensorflow-models/posenet';
+import { PosenetService } from './posenet.service';
 
 @Component({
   selector: 'app-root',
@@ -77,6 +78,10 @@ export class AppComponent implements OnInit {
   public videoPic: any = false;
   public snapData: any;
   public videoCanvasEnable: boolean = false;
+
+
+  constructor (public service : PosenetService){
+  }
 
   public async ngOnInit() {
     this.model = await posenet.load();
@@ -206,9 +211,9 @@ export class AppComponent implements OnInit {
             });
             this.drawMultiPoseResult();
           }
-        }, 1000);
+        }, 2000);
       }
-    }, 500);
+    }, 1000);
   }
 
   public async realTimeVideo() {
@@ -468,17 +473,19 @@ export class AppComponent implements OnInit {
   public async drawSinglePoseResult() {
     if (this.drawKeypoints) {
       // alert(JSON.stringify(this.singlePose[0]['keypoints']))
+      this.service.manipulateKeyPoints(this.singlePose[0]['keypoints'])
       this.singlePose[0]['keypoints'].forEach((points: any) => {
-        this.canvasContext.beginPath();
-        this.canvasContext.fillStyle = 'aqua';
-        this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI*2, true);
-        this.canvasContext.closePath();
-        this.canvasContext.fill();
+        if(points.score > this.service.scoreThreshold){
+          this.canvasContext.beginPath();
+          this.canvasContext.fillStyle = 'aqua';
+          this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI*2, true);
+          this.canvasContext.closePath();
+          this.canvasContext.fill();
+        }
       });
     }
     if (this.drawSkeleton) {
       let adjacentKeyPoints = await posenet.getAdjacentKeyPoints(this.singlePose[0]['keypoints'], 0.5);
-      // console.log('adjacent key points' , adjacentKeyPoints)
       for(let i = 0; i < adjacentKeyPoints.length; i++) {
         this.canvasContext.beginPath();
         this.canvasContext.moveTo(adjacentKeyPoints[i][0]['position']['x'], adjacentKeyPoints[i][0]['position']['y']);
