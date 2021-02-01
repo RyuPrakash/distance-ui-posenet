@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
   public modelLoaded: boolean = false;
   public title: string = 'Pose Estimation  App';
   public introline: string = '(using TensorFlow.js with PoseNet Model)';
-  public modelText: string = 'ResNet 50';
+  public modelText: string = 'MobileNet V1';
   public imgBtnStatus: boolean = true;
   public webBtnStatus: boolean = false;
   public imageElement: any;
@@ -342,19 +342,20 @@ export class AppComponent implements OnInit {
 
   public onKeypointsChanged() {
     this.drawKeypoints = !this.drawKeypoints;
-    if (this.imgBtnStatus) {
-      if (this.pose === 'single-person') {
-        this.estimatePose();
-      } else {
-        this.estimatePoses();
-      }
-    } else {
-      if (this.videoPic) {
-        this.snapPhoto();
-      } else {
-        this.realTimeVideo();
-      }
-    }
+    this.realTimeVideo();
+    // if (this.imgBtnStatus) {
+    //   if (this.pose === 'single-person') {
+    //     this.estimatePose();
+    //   } else {
+    //     this.estimatePoses();
+    //   }
+    // } else {
+    //   if (this.videoPic) {
+    //     this.snapPhoto();
+    //   } else {
+    //     this.realTimeVideo();
+    //   }
+    // }
   }
 
   public onSkeletonChanged() {
@@ -466,6 +467,7 @@ export class AppComponent implements OnInit {
 
   public async drawSinglePoseResult() {
     if (this.drawKeypoints) {
+      // alert(JSON.stringify(this.singlePose[0]['keypoints']))
       this.singlePose[0]['keypoints'].forEach((points: any) => {
         this.canvasContext.beginPath();
         this.canvasContext.fillStyle = 'aqua';
@@ -476,6 +478,7 @@ export class AppComponent implements OnInit {
     }
     if (this.drawSkeleton) {
       let adjacentKeyPoints = await posenet.getAdjacentKeyPoints(this.singlePose[0]['keypoints'], 0.5);
+      // console.log('adjacent key points' , adjacentKeyPoints)
       for(let i = 0; i < adjacentKeyPoints.length; i++) {
         this.canvasContext.beginPath();
         this.canvasContext.moveTo(adjacentKeyPoints[i][0]['position']['x'], adjacentKeyPoints[i][0]['position']['y']);
