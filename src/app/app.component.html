@@ -1,0 +1,38 @@
+<div class="container">
+
+  <div *ngIf="!modelLoaded" class="row">
+    <div class="progress">
+      <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar">
+        <b class="progress-text">Loading Model...</b>
+      </div>
+    </div>
+  </div>
+
+ 
+  <div class="row">
+
+    <div class="col-sm">
+      
+      <div [hidden]="!modelLoaded || !webBtnStatus" style="display: none">
+        <video #videoElement width="{{ videoWidth }}" height="{{ videoHeight }}"></video>
+      </div>
+    
+      <div *ngIf="videoCanvasEnable" >
+        <canvas id="videoCanvas" class="img-border" width="{{ canvasWidth }}" height="{{ canvasHeight }}"></canvas>
+      </div>
+
+    </div>
+
+    <div class="col-sm">
+      <p style="color:#fff;font-weight: 500;font-size: 90px;">You're too close, step back</p>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  
+</div>
