@@ -28,11 +28,18 @@
     </div>
 
     <div class="col-sm">
-      <p style="color:#fff;font-weight: 500;font-size: 90px;">
+      <p style="padding :20px;color:#fff;font-weight: 500;font-size: 90px; text-align: center;">
         {{ service.message }}
       </p>
+      <div style="text-align: center;" *ngIf="image && !service.message">
+        <img width="50" src="../assets/check.png"  />
+        <h4  style="color: #fff;">Image Captured</h4>
+        <img class="round-image" width="250px" [src]="image">
+        <button class="button" (click)="startDistanceEsitmation()">
+            Next
+        </button>
+      </div>
     </div>
-
   </div>
 
 

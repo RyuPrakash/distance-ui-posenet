@@ -15,15 +15,15 @@ export class AppComponent implements OnInit {
     { 'name': 'ResNet 50', 'value': 'ResNet50' }
   ];
   public architecture: any = 'MobileNetV1';
-  public multiplierArray: Array<number> = [ 1.01, 1.00, 0.75, 0.50 ];
+  public multiplierArray: Array<number> = [1.01, 1.00, 0.75, 0.50];
   public multiplier: any = 0.75;
-  public outputStrideArc1Array: Array<number> = [ 8, 16 ];
-  public outputStrideArc2Array: Array<number> = [ 16, 32 ];
+  public outputStrideArc1Array: Array<number> = [8, 16];
+  public outputStrideArc2Array: Array<number> = [16, 32];
   public outputStride: any = 16;
-  public inputResolutionArc1Array: Array<number> = [ 161, 193, 257, 289, 321, 353, 385, 417, 449, 481, 513 ];
-  public inputResolutionArc2Array: Array<number> = [ 257, 513 ];
+  public inputResolutionArc1Array: Array<number> = [161, 193, 257, 289, 321, 353, 385, 417, 449, 481, 513];
+  public inputResolutionArc2Array: Array<number> = [257, 513];
   public inputResolution: any = 257;
-  public quantBytesArray: Array<number> = [ 1, 2, 4 ];
+  public quantBytesArray: Array<number> = [1, 2, 4];
   public quantBytes: any = 1;
   public poseArray: Array<object> = [
     { 'name': 'Single Person', 'value': 'single-person' },
@@ -61,16 +61,16 @@ export class AppComponent implements OnInit {
   public imageSrc: any = 'assets/backpackman.jpg';
   public imageWidth: number = 410;
   public imageHeight: number = 310;
-  @ViewChild('videoElement', {static: false}) videoElement: ElementRef;
+  @ViewChild('videoElement', { static: false }) videoElement: ElementRef;
   public video: any;
-  public videoWidth: number = window.innerWidth/2;
+  public videoWidth: number = window.innerWidth / 2;
   public videoHeight: number = window.innerHeight;
   public videoStream: any;
   public canvas: any;
   public canvasWidth: number = this.videoWidth;
   public canvasHeight: number = this.videoHeight;
   public canvasContext: any;
-  @ViewChild("videoCanvas", {static: false}) videoCanvas: ElementRef;
+  @ViewChild("videoCanvas", { static: false }) videoCanvas: ElementRef;
   public maxPoseDetections: any = 5;
   public fileName: string = 'No File Chosen';
   public fileError: boolean = false;
@@ -78,23 +78,27 @@ export class AppComponent implements OnInit {
   public videoPic: any = false;
   public snapData: any;
   public videoCanvasEnable: boolean = false;
+  public imageCaptured = false ;
+  public imageDistanceSet = false ;
+  public lastAngle = 0
+  public distanceEstimationStart = false ;
+  public image = null ;
 
-
-  constructor (public service : PosenetService){
+  constructor(public service: PosenetService) {
   }
 
   public async ngOnInit() {
     this.model = await posenet.load();
     this.modelLoaded = true;
-    
+
     setTimeout(() => {
       this.setSliderConfig();
     }, 1000);
 
     this.videoMode();
     this.loadModel();
-   
-  
+
+
   }
 
 
@@ -129,20 +133,22 @@ export class AppComponent implements OnInit {
       // this.canvasContext.clearRect(0, 0, 400, 300);
       this.videoCanvasEnable = true;
       this.realTimeVideo()
+    
       this.onKeypointsChanged();
-      this.onSkeletonChanged();   
+      this.onSkeletonChanged();
+      
     }
   }
 
-  public initCamera(config:any) {
+  public initCamera(config: any) {
     let browser = <any>navigator;
     browser.getUserMedia = (browser.getUserMedia ||
       browser.webkitGetUserMedia ||
       browser.mozGetUserMedia ||
       browser.msGetUserMedia);
     browser.mediaDevices.getUserMedia(config).then((stream: any) => {
-      if(!stream.stop && stream.getTracks) {
-        stream.stop = function(){
+      if (!stream.stop && stream.getTracks) {
+        stream.stop = function () {
           this.getTracks().forEach(function (track: any) {
             track.stop();
           });
@@ -151,7 +157,7 @@ export class AppComponent implements OnInit {
       this.videoStream = stream;
       try {
         this.video.srcObject = this.videoStream;
-      } catch(err) {
+      } catch (err) {
         this.video.src = window.URL.createObjectURL(this.videoStream);
       }
       this.video.play();
@@ -218,7 +224,6 @@ export class AppComponent implements OnInit {
 
   public async realTimeVideo() {
     this.videoPic = false;
-    
     if (this.videoCanvasEnable) {
       if (this.pose === 'single-person') {
         this.singlePose = await this.model.estimatePoses(this.video, {
@@ -227,7 +232,7 @@ export class AppComponent implements OnInit {
         });
         
         this.renderSinglePoseResult();
-      
+
       } else {
         this.multiplePose = await this.model.estimatePoses(this.video, {
           flipHorizontal: this.flipHorizontal,
@@ -273,7 +278,7 @@ export class AppComponent implements OnInit {
     let inputResolution: any = parseInt(this.inputResolution);
     let multiplier: any = parseFloat(this.multiplier);
     let quantBytes: any = parseInt(this.quantBytes);
-    console.log(this.modelText,'>>>>>')
+    console.log(this.modelText, '>>>>>')
     if (this.modelText === 'MobileNet V1') {
       this.modelLoaded = false;
       this.model = await posenet.load({
@@ -471,22 +476,22 @@ export class AppComponent implements OnInit {
   }
 
   public async drawSinglePoseResult() {
-    if (this.drawKeypoints) {
+    if (this.drawKeypoints && this.distanceEstimationStart ) {
       // alert(JSON.stringify(this.singlePose[0]['keypoints']))
       this.service.manipulateKeyPoints(this.singlePose[0]['keypoints'])
       this.singlePose[0]['keypoints'].forEach((points: any) => {
-        if(points.score > this.service.scoreThreshold){
+        if (points.score > this.service.scoreThreshold) {
           this.canvasContext.beginPath();
           this.canvasContext.fillStyle = 'aqua';
-          this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI*2, true);
+          this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI * 2, true);
           this.canvasContext.closePath();
           this.canvasContext.fill();
         }
       });
     }
-    if (this.drawSkeleton) {
+    if (this.drawSkeleton && this.distanceEstimationStart) {
       let adjacentKeyPoints = await posenet.getAdjacentKeyPoints(this.singlePose[0]['keypoints'], 0.5);
-      for(let i = 0; i < adjacentKeyPoints.length; i++) {
+      for (let i = 0; i < adjacentKeyPoints.length; i++) {
         this.canvasContext.beginPath();
         this.canvasContext.moveTo(adjacentKeyPoints[i][0]['position']['x'], adjacentKeyPoints[i][0]['position']['y']);
         this.canvasContext.lineTo(adjacentKeyPoints[i][1]['position']['x'], adjacentKeyPoints[i][1]['position']['y']);
@@ -495,7 +500,7 @@ export class AppComponent implements OnInit {
         this.canvasContext.stroke();
       }
     }
-    if(this.drawBoundingBox) {
+    if (this.drawBoundingBox) {
       let boundingBox = posenet.getBoundingBox(this.singlePose[0]['keypoints']);
       this.canvasContext.beginPath();
       this.canvasContext.strokeStyle = 'red';
@@ -510,7 +515,14 @@ export class AppComponent implements OnInit {
       this.canvasContext = this.canvas.getContext("2d");
       this.canvasContext.drawImage(this.videoElement.nativeElement, 0, 0, this.canvasWidth, this.canvasHeight);
       this.drawSinglePoseResult();
-    } catch(e) { }
+      if(!this.imageCaptured){
+         this.drawImageCaptureCircle();
+         this.imageDistanceSet = this.service.setDistanceForImageCapture(this.canvasWidth/2 , this.canvasHeight/2 , this.canvasWidth /3,this.canvasHeight /2.5,this.singlePose[0]['keypoints'])
+         if(!this.imageDistanceSet) {
+            this.lastAngle = 0
+         }
+      }
+    } catch (e) { }
   }
 
   public async estimatePoses() {
@@ -529,19 +541,19 @@ export class AppComponent implements OnInit {
   }
 
   public async drawMultiPoseResult() {
-    for(let j = 0; j < this.multiplePose.length; j++) {
-      if(this.drawKeypoints) {
+    for (let j = 0; j < this.multiplePose.length; j++) {
+      if (this.drawKeypoints) {
         this.multiplePose[j]['keypoints'].forEach((points: any) => {
           this.canvasContext.beginPath();
           this.canvasContext.fillStyle = 'aqua';
-          this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI*2, true);
+          this.canvasContext.arc(points['position']['x'], points['position']['y'], 3, 0, Math.PI * 2, true);
           this.canvasContext.closePath();
           this.canvasContext.fill();
         });
       }
-      if(this.drawSkeleton) {
+      if (this.drawSkeleton) {
         let adjacentKeyPoints = await posenet.getAdjacentKeyPoints(this.multiplePose[j]['keypoints'], 0.5);
-        for(let i = 0; i < adjacentKeyPoints.length; i++) {
+        for (let i = 0; i < adjacentKeyPoints.length; i++) {
           this.canvasContext.beginPath();
           this.canvasContext.moveTo(adjacentKeyPoints[i][0]['position']['x'], adjacentKeyPoints[i][0]['position']['y']);
           this.canvasContext.lineTo(adjacentKeyPoints[i][1]['position']['x'], adjacentKeyPoints[i][1]['position']['y']);
@@ -550,7 +562,7 @@ export class AppComponent implements OnInit {
           this.canvasContext.stroke();
         }
       }
-      if(this.drawBoundingBox) {
+      if (this.drawBoundingBox) {
         let boundingBox = posenet.getBoundingBox(this.multiplePose[j]['keypoints']);
         this.canvasContext.beginPath();
         this.canvasContext.strokeStyle = 'red';
@@ -567,7 +579,7 @@ export class AppComponent implements OnInit {
       this.canvasContext = this.canvas.getContext("2d");
       this.canvasContext.drawImage(this.videoElement.nativeElement, 0, 0, this.canvasWidth, this.canvasHeight);
       this.drawMultiPoseResult();
-    } catch(e) { }
+    } catch (e) { }
   }
 
   public browseFile(files: any) {
@@ -590,4 +602,54 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public drawImageCaptureCircle() {
+    this.canvas = document.getElementById("videoCanvas");
+    this.canvasContext = this.canvas.getContext("2d");
+    // this.canvasContext.filter = 'blur('+ this.canvasWidth +'px)'
+    this.canvasContext.stroke();
+
+    // this.canvasContext.filter = 'none'
+    this.canvasContext.beginPath();
+    this.canvasContext.strokeStyle = 'aqua';
+    this.canvasContext.lineWidth = 10; 
+    // this.canvasContext.arc(this.canvasWidth/2, (this.canvasHeight/2.5), (this.canvasWidth /2.5) , 0, 2 * Math.PI);
+
+    this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3), (this.canvasHeight /2.5), Math.PI, 0 , 2*Math.PI );
+    this.canvasContext.stroke();
+
+    if(this.imageDistanceSet) {
+        this.canvasContext.beginPath();
+        this.canvasContext.strokeStyle = 'green';
+        this.canvasContext.lineWidth = 20; 
+        if(this.lastAngle < 2*Math.PI){
+          this.lastAngle = this.lastAngle + (2*Math.PI)/10
+          this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
+          this.canvasContext.stroke();
+
+        } 
+        if(this.lastAngle ==  2*Math.PI){
+            this.imageCaptured = true 
+            console.log(`image captured`)
+            try {
+              // this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
+              // this.canvasContext.stroke();
+             setTimeout(()=>{
+              this.image =  this.canvas.toDataURL();
+              this.service.message = ''
+             },1000)
+            } catch(e){
+              console.log(e)
+            }
+          
+        }
+    } 
+  
+  }
+
+  public startDistanceEsitmation(){
+    this.service.message ="Please start moving back"
+    setTimeout(()=>{
+      this.distanceEstimationStart = true
+    },1500)
+  }
 }
