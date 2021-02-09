@@ -622,12 +622,12 @@ export class AppComponent implements OnInit {
         this.canvasContext.strokeStyle = 'green';
         this.canvasContext.lineWidth = 20; 
         if(this.lastAngle < 2*Math.PI){
-          this.lastAngle = this.lastAngle + (2*Math.PI)/10
+          this.lastAngle = this.lastAngle + (2*Math.PI)/80
           this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
           this.canvasContext.stroke();
 
         } 
-        if(this.lastAngle ==  2*Math.PI){
+        if(this.lastAngle >=  2*Math.PI){
             this.imageCaptured = true 
             console.log(`image captured`)
             try {
@@ -647,9 +647,9 @@ export class AppComponent implements OnInit {
   }
 
   public startDistanceEsitmation(){
-    this.service.message ="Please start moving back"
+    this.service.message ="Please start moving back gradually"
     setTimeout(()=>{
       this.distanceEstimationStart = true
-    },1500)
+    },3000)
   }
 }

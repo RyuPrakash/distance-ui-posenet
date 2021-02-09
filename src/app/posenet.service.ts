@@ -4,6 +4,9 @@ import * as distance from './trained-net.js'
 export class PosenetService {
   message:string = ''
   scoreThreshold = 0.50
+  distancePer = 0 
+  distance = 0;
+  correctDistance = 3.25;
   constructor() { }
 
   manipulateKeyPoints(keypoints){
@@ -15,6 +18,9 @@ export class PosenetService {
         let nose = clearPoints.filter(item => item.part == 'nose')
         let leftShoulder = clearPoints.filter(item => item.part == 'leftShoulder')
         let rightShoulder = clearPoints.filter(item => item.part == 'rightShoulder')
+        let leftHip = clearPoints.filter(item => item.part == 'leftHip' )
+        let rightHip = clearPoints.filter(item => item.part == 'rightHip' )
+        
 
         if(nose.length>0){
           nose = nose[0]['position']
@@ -38,6 +44,22 @@ export class PosenetService {
         } else {
           rightShoulder = null
         }
+
+        if(leftHip.length>0){
+          leftHip = leftHip[0]['position']
+          leftHip.x = Number(leftHip.x)
+          leftHip.y = Number(leftHip.y)
+        } else {
+          leftHip = null
+        }
+
+        if(rightHip.length>0){
+          rightHip = rightHip[0]['position']
+          rightHip.x = Number(rightHip.x)
+          rightHip.y = Number(rightHip.y)
+        } else {
+          rightHip = null
+        }
         
         if(nose && leftShoulder && rightShoulder){
           const zeroArea = 84000;
@@ -46,7 +68,21 @@ export class PosenetService {
           const dst = distance.run([perChange])
 
           this.message = `${dst.toFixed(2)} m`
-        } else {
+          this.distance = dst
+          this.distancePer = (Number(dst.toFixed(2))/this.correctDistance)*100
+        } else if(leftHip && rightHip && leftShoulder && rightShoulder){
+          const zeroArea = 84000;
+          let testingArea = this.makeAreaWithShoulderAndHip(leftShoulder,leftHip , rightHip,rightShoulder)
+          const perChange = Math.abs(((zeroArea - testingArea) * 100) / zeroArea);
+          const dst = distance.run([perChange])
+
+          this.message = `${dst.toFixed(2)} m`
+          this.distance = dst
+          this.distancePer = (Number(dst.toFixed(2))/this.correctDistance)*100
+        } 
+        else {
+          this.distance = 0
+          this.distancePer = 0
           this.message = `Unable to detect you properly`
         }
       }
@@ -58,6 +94,21 @@ export class PosenetService {
                 (leftShoulder.x * (rightShoulder.y - nose.y)) +
                 (rightShoulder.x * (nose.y - leftShoulder.y))
       return Number(Math.abs( num / 2).toFixed(2))     
+  }
+
+  makeAreaWithShoulderAndHip(leftShoulder,leftHip,rightHip,rightShoulder){
+    return  (((leftShoulder.x * leftHip.y) + 
+              (leftHip.x*rightHip.y) +  
+              (rightHip.x*rightShoulder.y) + 
+              (rightShoulder.x*leftShoulder.y)) -
+            ( (leftHip.x * leftShoulder.y) + 
+              (rightHip.x*leftHip.y) +  
+              (rightShoulder.x * rightHip.y ) +
+              (leftShoulder.x * rightShoulder.y)
+            )) / 2
+
+    // (1/2) ⋅ {(x1y2 + x2y3 + x3y4 + x4y1)
+    //   - (x2y1 + x3y2 + x4y3 + x1y4)}
   }
 
   setDistanceForImageCapture(x, y , yDistance , xDistance , keypoints ){

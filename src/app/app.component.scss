@@ -41,6 +41,16 @@ h1 {
   margin: 5px;
 }
 
+.distance-bar {
+  background-color: #ccc !important;
+  margin-top:20px !important;
+  margin-bottom:50px !important;
+}
+
+.distance-bar-progress {
+  background-color: green;
+  margin : 0px -15px;
+}
 .button span {
   cursor: pointer;
   display: inline-block;

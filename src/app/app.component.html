@@ -26,7 +26,9 @@
       </div>
 
     </div>
-
+    <div class="col-sm-1 distance-bar" *ngIf="distanceEstimationStart">
+        <div class="distance-bar-progress" [style.height.%]="service.distancePer"></div>
+    </div>
     <div class="col-sm">
       <p style="padding :20px;color:#fff;font-weight: 500;font-size: 90px; text-align: center;">
         {{ service.message }}
