@@ -72,7 +72,7 @@ export class PosenetService {
           this.distancePer = (Number(dst.toFixed(2))/this.correctDistance)*100
         } else if(leftHip && rightHip && leftShoulder && rightShoulder){
           const zeroArea = 84000;
-          let testingArea = this.makeAreaWithShoulderAndHip(leftShoulder,leftHip , rightHip,rightShoulder)
+          let testingArea = this.makeAreaWithShoulderAndHip(leftShoulder,leftHip , rightHip,rightShoulder)/2
           const perChange = Math.abs(((zeroArea - testingArea) * 100) / zeroArea);
           const dst = distance.run([perChange])
 

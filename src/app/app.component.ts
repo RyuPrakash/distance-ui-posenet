@@ -495,7 +495,7 @@ export class AppComponent implements OnInit {
         this.canvasContext.beginPath();
         this.canvasContext.moveTo(adjacentKeyPoints[i][0]['position']['x'], adjacentKeyPoints[i][0]['position']['y']);
         this.canvasContext.lineTo(adjacentKeyPoints[i][1]['position']['x'], adjacentKeyPoints[i][1]['position']['y']);
-        this.canvasContext.lineWidth = 2;
+        this.canvasContext.lineWidth = 8;
         this.canvasContext.strokeStyle = 'aqua';
         this.canvasContext.stroke();
       }
