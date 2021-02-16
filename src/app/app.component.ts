@@ -624,10 +624,9 @@ export class AppComponent implements OnInit {
         if(this.lastAngle < 2*Math.PI){
           setTimeout(()=>{
             this.lastAngle = this.lastAngle + (2*Math.PI)/80
-          },1000)
+          },1500)
           this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
-          this.canvasContext.stroke();
-
+          this.canvasContext.stroke();  
         } 
         if(this.lastAngle >=  2*Math.PI){
             this.imageCaptured = true 
