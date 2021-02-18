@@ -53,11 +53,12 @@
         <!-- Checkboxes -->
         <div style="margin-top: 1rem;">
           <div>
-            <label><input type="checkbox" value="imageCaptured" checked>&nbsp;
+            <label><input type="checkbox"  [checked]="checked">&nbsp;
               Yes, I approve of this image</label>
           </div>
-          <div >
-              <label><input type="checkbox" value="">&nbsp;
+     
+          <div>
+              <label><input type="checkbox" [checked]="unchecked">&nbsp;
                 No, I want to re-capture again</label>
           </div>
         </div>

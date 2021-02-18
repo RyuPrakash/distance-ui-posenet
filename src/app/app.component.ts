@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, OnChanges } from '@angular/co
 import { Options, ChangeContext } from 'ng5-slider';
 import * as posenet from '@tensorflow-models/posenet';
 import { PosenetService } from './posenet.service';
+import { any } from '@tensorflow/tfjs';
 
 @Component({
   selector: 'app-root',
@@ -78,11 +79,13 @@ export class AppComponent implements OnInit {
   public videoPic: any = false;
   public snapData: any;
   public videoCanvasEnable: boolean = false;
-  public imageCaptured = false ;
-  public imageDistanceSet = false ;
+  public imageCaptured = false;
+  public checked = false;
+  public unchecked= false;
+  public imageDistanceSet = false;
   public lastAngle = 0
-  public distanceEstimationStart = false ;
-  public image = null ;
+  public distanceEstimationStart = false;
+  public image = null;
 
   constructor(public service: PosenetService) {
   }
@@ -97,8 +100,6 @@ export class AppComponent implements OnInit {
 
     this.videoMode();
     this.loadModel();
-
-
   }
 
 
@@ -133,10 +134,10 @@ export class AppComponent implements OnInit {
       // this.canvasContext.clearRect(0, 0, 400, 300);
       this.videoCanvasEnable = true;
       this.realTimeVideo()
-    
+
       this.onKeypointsChanged();
       this.onSkeletonChanged();
-      
+
     }
   }
 
@@ -230,7 +231,7 @@ export class AppComponent implements OnInit {
           flipHorizontal: this.flipHorizontal,
           decodingMethod: 'single-person'
         });
-        
+
         this.renderSinglePoseResult();
 
       } else {
@@ -476,7 +477,7 @@ export class AppComponent implements OnInit {
   }
 
   public async drawSinglePoseResult() {
-    if (this.drawKeypoints && this.distanceEstimationStart ) {
+    if (this.drawKeypoints && this.distanceEstimationStart) {
       // alert(JSON.stringify(this.singlePose[0]['keypoints']))
       this.service.manipulateKeyPoints(this.singlePose[0]['keypoints'])
       this.singlePose[0]['keypoints'].forEach((points: any) => {
@@ -515,13 +516,14 @@ export class AppComponent implements OnInit {
       this.canvasContext = this.canvas.getContext("2d");
       this.canvasContext.drawImage(this.videoElement.nativeElement, 0, 0, this.canvasWidth, this.canvasHeight);
       this.drawSinglePoseResult();
-      if(!this.imageCaptured){
-         this.drawImageCaptureCircle();
-         this.imageDistanceSet = this.service.setDistanceForImageCapture(this.canvasWidth/2 , this.canvasHeight/2 , this.canvasWidth /3,this.canvasHeight /2.5,this.singlePose[0]['keypoints'])
-         if(!this.imageDistanceSet) {
-            this.lastAngle = 0
-         }
+      if (!this.imageCaptured) {
+        this.drawImageCaptureCircle();
+        this.imageDistanceSet = this.service.setDistanceForImageCapture(this.canvasWidth / 2, this.canvasHeight / 2, this.canvasWidth / 3, this.canvasHeight / 2.5, this.singlePose[0]['keypoints'])
+        if (!this.imageDistanceSet) {
+          this.lastAngle = 0
+        }
       }
+      
     } catch (e) { }
   }
 
@@ -611,46 +613,46 @@ export class AppComponent implements OnInit {
     // this.canvasContext.filter = 'none'
     this.canvasContext.beginPath();
     this.canvasContext.strokeStyle = 'aqua';
-    this.canvasContext.lineWidth = 10; 
+    this.canvasContext.lineWidth = 10;
     // this.canvasContext.arc(this.canvasWidth/2, (this.canvasHeight/2.5), (this.canvasWidth /2.5) , 0, 2 * Math.PI);
 
-    this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3), (this.canvasHeight /2.5), Math.PI, 0 , 2*Math.PI );
+    this.canvasContext.ellipse(this.canvasWidth / 2, (this.canvasHeight / 2), (this.canvasWidth / 3), (this.canvasHeight / 2.5), Math.PI, 0, 2 * Math.PI);
     this.canvasContext.stroke();
 
-    if(this.imageDistanceSet) {
-        this.canvasContext.beginPath();
-        this.canvasContext.strokeStyle = 'green';
-        this.canvasContext.lineWidth = 20; 
-        if(this.lastAngle < 2*Math.PI){
-          setTimeout(()=>{
-            this.lastAngle = this.lastAngle + (2*Math.PI)/80
-          },1500)
-          this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
-          this.canvasContext.stroke();  
-        } 
-        if(this.lastAngle >=  2*Math.PI){
-            this.imageCaptured = true 
-            console.log(`image captured`)
-            try {
-              // this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
-              // this.canvasContext.stroke();
-             setTimeout(()=>{
-              this.image =  this.canvas.toDataURL();
-              this.service.message = ''
-             },1000)
-            } catch(e){
-              console.log(e)
-            }
-          
+    if (this.imageDistanceSet) {
+      this.canvasContext.beginPath();
+      this.canvasContext.strokeStyle = 'green';
+      this.canvasContext.lineWidth = 20;
+      if (this.lastAngle < 2 * Math.PI) {
+        setTimeout(() => {
+          this.lastAngle = this.lastAngle + (2 * Math.PI) / 80
+        }, 1500)
+        this.canvasContext.ellipse(this.canvasWidth / 2, (this.canvasHeight / 2), (this.canvasWidth / 3) + 10, (this.canvasHeight / 2.5) + 10, Math.PI, 0, this.lastAngle);
+        this.canvasContext.stroke();
+      }
+      if (this.lastAngle >= 2 * Math.PI) {
+        this.imageCaptured = true
+        console.log(`image captured`)
+        try {
+          // this.canvasContext.ellipse(this.canvasWidth/2, (this.canvasHeight/2) ,(this.canvasWidth /3)+10, (this.canvasHeight /2.5)+10, Math.PI , 0 , this.lastAngle );
+          // this.canvasContext.stroke();
+          setTimeout(() => {
+            this.image = this.canvas.toDataURL();
+            this.service.message = ''
+          }, 1000)
+        } catch (e) {
+          console.log(e)
         }
-    } 
-  
+
+      }
+    }
+
   }
 
-  public startDistanceEsitmation(){
-    this.service.message ="Please start moving back gradually"
-    setTimeout(()=>{
+  public startDistanceEsitmation() {
+    this.service.message = "Please start moving back gradually"
+    setTimeout(() => {
       this.distanceEstimationStart = true
-    },3000)
+    }, 3000)
   }
 }
