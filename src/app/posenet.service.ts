@@ -121,41 +121,41 @@ export class PosenetService {
     let rightEye = clearPoints.filter(item => item.part == 'rightEye')
 
     if(!nose.length || !leftEye.length || !rightEye.length ){
-          this.message = `Please center your face within the circle.`
+          this.message = `Please center your face inside the circle for auto capture.`
     } else  {
       leftEye = leftEye[0]['position']
       let leftEyePosition = this.checkpoint(x, y, Number(leftEye.x) , Number(leftEye.y) , xDistance, yDistance)
       
       if(leftEyePosition>=1){
-        this.message = `Please center your face within the circle.`
+        this.message = `Please center your face inside the circle for auto capture.`
         return false 
       }
 
       rightEye = rightEye[0]['position']
       let rightEyePosition = this.checkpoint(x, y, Number(rightEye.x) , Number(rightEye.y) , xDistance, yDistance)
       if(rightEyePosition>=1){
-        this.message = `Please center your face within the circle.`
+        this.message = `Please center your face inside the circle for auto capture.`
         return false 
       }    
       
       nose = nose[0]['position'] 
       let nosePosition = this.checkpoint(x, y, Number(nose.x) , Number(nose.y) , xDistance, yDistance)
       if(nosePosition>=1){
-        this.message = `Please center your face within the circle.`
+        this.message = `Please center your face inside the circle for auto capture.`
         return false 
       } 
 
       // leftShoulder = leftShoulder[0]['position']
       // let leftShoulderPosition = this.checkpoint(x, y, Number(leftShoulder.x) , Number(leftShoulder.y) , xDistance, yDistance)
       // if(leftShoulderPosition < 1){
-      //   this.message = `Please center your face within the circle.`
+      //   this.message = `Please center your face inside the circle for auto capture.`
       //   return false 
       // } 
 
       // rightShoulder = rightShoulder[0]['position']
       // let rightShoulderPosition = this.checkpoint(x, y, Number(rightShoulder.x) , Number(rightShoulder.y) , xDistance, yDistance)
       // if(rightShoulderPosition < 1){
-      //   this.message = `Please center your face within the circle.`
+      //   this.message = `Please center your face inside the circle for auto capture.`
       //   return false 
       // } 
 

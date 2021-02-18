@@ -1,5 +1,6 @@
 <div class="container">
 
+  <!-- Loader -->
   <div *ngIf="!modelLoaded" class="row">
     <div class="progress">
       <div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar">
@@ -8,9 +9,10 @@
     </div>
   </div>
 
- 
+ <!-- Main Screen -->
   <div class="row">
 
+    <!-- Right side view -->
     <div class="col-sm">
       
       <div [hidden]="!modelLoaded || !webBtnStatus" style="display: none">
@@ -26,28 +28,51 @@
       </div>
 
     </div>
+    
     <div class="col-sm-1 distance-bar" *ngIf="distanceEstimationStart">
         <div class="distance-bar-progress" [style.height.%]="service.distancePer"></div>
     </div>
+
+
+    <!-- Left side view -->
     <div class="col-sm">
-      <p style="padding :20px;color:#fff;font-weight: 500;font-size: 90px; text-align: center;">
-        {{ service.message }}
-      </p>
-      <div style="text-align: center;" *ngIf="image && !service.message">
-        <img width="50" src="../assets/check.png"  />
-        <h4  style="color: #fff;">Image Captured</h4>
-        <img class="round-image" width="250px" [src]="image">
-        <button class="button" (click)="startDistanceEsitmation()">
-            Next
-        </button>
+
+      <div style="font-size: 2.8rem;line-height: 1.1!important;margin-top: 9rem;text-align: center;" *ngIf="!image && service.message">
+        <p>
+          {{ service.message }}
+        </p>
+      </div>
+
+      <div  *ngIf="image && !service.message" style="display: flex;flex-direction: column;align-items: center;align-content: space-between;">
+        
+        <!-- Image -->
+        <div style="margin-top: 4rem;">
+          <img class="round-image" width="200px" height="200px" [src]="image">
+        </div>
+        
+        <!-- Checkboxes -->
+        <div style="margin-top: 1rem;">
+          <div>
+            <label><input type="checkbox" value="imageCaptured" checked>&nbsp;
+              Yes, I approve of this image</label>
+          </div>
+          <div >
+              <label><input type="checkbox" value="">&nbsp;
+                No, I want to re-capture again</label>
+          </div>
+        </div>
+
+         
+        <!-- Button -->
+        <div style="margin-top: 3rem;">
+          <button type="button" class="btn btn-outline-primary" style="width: 16rem;" (click)="startDistanceEsitmation()">
+              Next
+          </button>
+        </div>
+
       </div>
     </div>
+
   </div>
 
-
-
-
-
-
-  
 </div>
